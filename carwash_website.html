@@ -1,201 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Couisns Wash</title>
+  <title>Car Wash Booking</title>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-    }
-    header {
-      background: #0077cc;
-      color: white;
-      padding: 20px 0;
-      text-align: center;
-    }
-    header img {
-      width: 80px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-    nav {
-      background: #005fa3;
-      padding: 10px;
-      text-align: center;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 15px;
-      font-weight: bold;
-    }
-    .hero {
-      background: url('https://cdn-ggmhl.nitrocdn.com/PfCUxNAPrCunbQSwkhjKoHxGJcNXDCZx/assets/images/optimized/rev-215f8ae/rocketcarwash.com/wp-content/uploads/7.png') center/cover no-repeat;
-      height: 300px;
-    }
-    .content {
-      padding: 40px 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .services {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-    }
-    .service {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 250px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    form {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-top: 20px;
-    }
-    form input, form select, form textarea, form button {
-      display: block;
+    body { font-family: Arial; text-align: center; }
+    form { max-width: 400px; margin: auto; }
+    input, select, button {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      margin: 5px;
     }
-    form button {
-      background-color: #0077cc;
+    button {
+      background: green;
       color: white;
-      font-weight: bold;
-      cursor: pointer;
       border: none;
     }
-    footer {
-      background: #0077cc;
-      color: white;
-      text-align: center;
-      padding: 15px 0;
-      margin-top: 40px;
-    }
   </style>
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
+
 <body>
-  <header>
-    <img src="/mnt/data/Youth Crew Neck Sweatshirt  Gildan 18000B.png" alt="Couisns Wash Logo">
-    <h1>Couisns Wash</h1>
-    <p>Premium car wash service that makes your ride shine!</p>
-  </header>
 
-  <nav>
-    <a href="#services">Services</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-    <a href="#booking">Book</a>
-  </nav>
+<h1>🚗 Book a Car Wash</h1>
 
-  <section class="hero"></section>
+<form id="form">
+  <input id="name" placeholder="Your Name" required>
+  <input id="email" type="email" placeholder="Your Email" required>
+  <input id="address" placeholder="Your Address" required>
 
-  <section id="services" class="content">
-    <h2>Our Services</h2>
-    <div class="services">
-      <div class="service">
-        <h3>Basic Wash</h3>
-        <p>Exterior rinse and soap wash. Quick and clean!</p>
-        <strong>$10</strong>
-      </div>
-      <div class="service">
-        <h3>Deluxe Wash</h3>
-        <p><em>Coming Soon!</em></p>
-        <strong>$20</strong>
-      </div>
-      <div class="service">
-        <h3>Premium Detail</h3>
-        <p><em>Coming Soon!</em></p>
-        <strong>$50</strong>
-      </div>
-    </div>
-  </section>
+  <input id="date" type="date" required>
+  <select id="time"></select>
 
-  <section id="about" class="content">
-    <h2>About Us</h2>
-    <p>
-      Couisns Wash is run by 2 passionate couisns. We take pride in our eco-friendly cleaning methods and top-quality customer service.
-    </p>
-  </section>
+  <input id="brand" placeholder="Car Brand" required>
+  <input id="type" placeholder="Car Type" required>
+  <input id="color" placeholder="Car Color" required>
 
-  <section id="contact" class="content">
-    <h2>Contact Us</h2>
-    <p>Email: support@couisnswash.com</p>
-    <p>Phone: (123) 456-7890</p>
-    <p>Address: 123 Clean Ave, CarCity, USA</p>
-  </section>
+  <button type="submit">Book Now</button>
+</form>
 
-  <section id="booking" class="content">
-    <h2>Book a Wash</h2>
-    <p><strong>Available only on Saturdays and Sundays from 9:00 AM to 4:00 PM</strong></p>
-    <form id="booking-form">
-      <label for="date">Date:</label>
-      <input type="date" id="date" name="date" required />
+<script>
+// 🔑 PASTE YOUR EMAILJS KEY
+emailjs.init("YOUR_PUBLIC_KEY");
 
-      <label for="time">Time:</label>
-      <input type="time" id="time" name="time" min="09:00" max="16:00" required />
+// 🔑 PASTE YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
 
-      <label for="address">Your Address:</label>
-      <input type="text" id="address" name="address" required />
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-      <label for="vehicles">Number of Vehicles:</label>
-      <input type="number" id="vehicles" name="vehicles" min="1" required />
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
 
-      <button type="submit">Book Now</button>
-    </form>
-  </section>
+// Generate times
+function generateTimes(bookedTimes = []) {
+  timeSelect.innerHTML = "";
 
-  <footer>
-    <p>&copy; 2025 Couisns Wash. All rights reserved.</p>
-  </footer>
+  for (let h = 8; h < 17; h++) {
+    for (let m of [0, 25, 50]) {
+      let time = `${h}:${m.toString().padStart(2,'0')}`;
 
-  <script>
-    emailjs.init("YOUR_USER_ID");
+      let option = document.createElement("option");
+      option.value = time;
+      option.textContent = time;
 
-    const bookedSlots = {}; // demo only – replace with real DB in production
-
-    document.getElementById("booking-form").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const date = document.getElementById("date").value;
-      const time = document.getElementById("time").value;
-      const key = date + " " + time;
-
-      if (bookedSlots[key]) {
-        alert("Sorry, this time slot is already booked.");
-        return;
+      if (bookedTimes.includes(time)) {
+        option.disabled = true;
+        option.textContent += " (Booked)";
       }
 
-      bookedSlots[key] = true;
+      timeSelect.appendChild(option);
+    }
+  }
+}
 
-      const params = {
-        date,
-        time,
-        address: document.getElementById("address").value,
-        vehicles: document.getElementById("vehicles").value
-      };
+// Load bookings from Firebase
+async function loadBookings() {
+  let date = dateInput.value;
+  if (!date) return;
 
-      // Send confirmation to user
-      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", params)
-        .then(() => alert("Booking confirmed! A confirmation email has been sent."))
-        .catch(() => alert("Error sending booking email."));
+  let snapshot = await db.collection("bookings")
+    .where("date", "==", date)
+    .get();
 
-      // Send notification to business
-      emailjs.send("YOUR_SERVICE_ID", "YOUR_NOTIFICATION_TEMPLATE_ID", params);
-    });
-  </script>
+  let bookedTimes = [];
+  snapshot.forEach(doc => {
+    bookedTimes.push(doc.data().time);
+  });
+
+  generateTimes(bookedTimes);
+}
+
+// Check weekend
+dateInput.addEventListener("change", async () => {
+  let day = new Date(dateInput.value).getDay();
+
+  if (day !== 0 && day !== 6) {
+    alert("Only Saturday & Sunday allowed");
+    dateInput.value = "";
+    return;
+  }
+
+  await loadBookings();
+});
+
+// Default times
+generateTimes();
+
+// Submit booking
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let address = document.getElementById("address").value;
+  let date = dateInput.value;
+  let time = timeSelect.value;
+  let brand = document.getElementById("brand").value;
+  let type = document.getElementById("type").value;
+  let color = document.getElementById("color").value;
+
+  let id = date + "_" + time;
+
+  let doc = await db.collection("bookings").doc(id).get();
+
+  if (doc.exists) {
+    alert("This time is already booked!");
+    return;
+  }
+
+  // Save booking
+  await db.collection("bookings").doc(id).set({
+    name, email, address, date, time, brand, type, color
+  });
+
+  // Send email
+  emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+    name,
+    email,
+    address,
+    date,
+    time,
+    brand,
+    type,
+    color
+  });
+
+  alert("Booking confirmed 🚗");
+
+  // Refresh times
+  await loadBookings();
+});
+</script>
+
 </body>
 </html>
